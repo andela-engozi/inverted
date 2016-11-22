@@ -1,66 +1,65 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="invertedIndex">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inverted-index</title>
+    <link href ="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"rel="stylesheet">
+    <link href="./lib/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./lib/css/bootstrap.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="angular.js"></script>
     <script src="inverted-index.js"></script>
     <script src="app.js"></script>
-    <link href ="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"rel="stylesheet">
-    <title>Inverted-index</title>
-    <link href="./lib/css/bootstrap.min.css" rel="stylesheet">
-    <link href="./lib/css/bootstrap.css" rel="stylesheet">
 </head>
 
 <body ng-controller="indexController">
     <nav class="navbar navbar-default" role="navigation">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="#">Inverted Index</a>
         </div>
         <div class="col-sm-5 col-md-5">
             <form role="search">
                 <div class="search" ng-submit="search()">
                     <input type="text" class="form-control input-sm" maxlength="64" ng-model="query" placeholder="Search" />
-                    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                    <button type="submit" class="btn btn-primary btn-sm" ng-click="search">Search</button>
                 </div>
             </form>
-        </div>
         </div>
     </nav>
 
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <div class="row"><div class="col-md-12">
-
-                <div class="list-group">
-                    <a href="#" class="list-group-item active">
-                        <span class="badge">{{badges}}</span>Books Uploaded</a>
-                    <button type="button" class="list-group-item">Create Index</button>
-                </div>
-                </div>
-                <div class="col-md-12">
-                    <input type="file" class="form-control" id="json-file">
-                    <span class="input-group-btn">
-             </span>
-                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item active">
+                                <span class="badge"></span>Books Uploaded</a>
+                            <button type="button" class="list-group-item">Create Index</button>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="file" class="form-control" id="json-file">
+                        <span class="input-group-btn"></span>
+                        <p ng-show="indexNames.length < 1">Please upload a Json file.</p>
+                    </div>
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="panel panel-default">
                     <div class="panel-heading active">
                         Documents
-                        <span class="label label-info">Info</span></div>
+                        <span class="label label-info">Info</span>
+                    </div>
                     <table class="table">
                         <thead ng-controller="indexController">
                             <tr>
@@ -68,31 +67,24 @@
                                 <th colspan="doc.length">File</th>
                             </tr>
                             <tr>
-                                <th>Tokens</th>
+                                <th>Terms</th>
                                 <th ng-repeat="i in doc">Doc {{i+1}}</th>
                             </tr>
                         </thead>
                         <tbody>
-                           <tr ng-repeat="(key,value) in indexObject">  <!--key:value-->
+                           <tr ng-repeat="(key,value) in indexObject">
                                 <td>{{key}}</td>
                                 <td ng-repeat="i in doc">
-                                <span ng-repeat="val in value">
-                                    
-                                <span ng-if="i==val"><i class="fa fa-check" aria-hidden="true"></i></span>
-                                </span>
-
+                                    <span ng-repeat="val in value">
+                                        <span ng-if="i==val"><i class="fa fa-check" aria-hidden="true"></i></span>
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
-    </div>
-
-    <div>
-
-    </div>  
+    </div> 
 </body>
 </html>
