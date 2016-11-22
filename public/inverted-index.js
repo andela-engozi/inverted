@@ -19,10 +19,9 @@ var index = function () {
         value: function createIndex(fileContent) {
             var _this = this;
 
-            this.indexes = [];
             this.docCount = [];
-            console.log(this.docCount);
             for (var object in fileContent) {
+                //explain this
                 this.docCount.push(parseInt(object, 10));
             };
             fileContent.forEach(function (item, index) {
@@ -52,13 +51,18 @@ var index = function () {
 
     }, {
         key: 'searchIndex',
-        value: function searchIndex(query, title) {
-            var queryToken = this.tokenize(query);
-            var searchIndex = this.getIndex(title);
+        value: function searchIndex(query) {
+            var _this2 = this;
 
-            if (!searchIndex) {
-                return 'Index with ' + title + ' does not exist.';
-            }
+            var result = {};
+            var search = query.split(' ');
+            search.forEach(function (word) {
+                if (_this2.fileMap.hasOwnProperty(word)) {
+                    result[word] = _this2.fileMap[word];
+                }
+            });
+
+            return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
         }
 
         //tokenize
@@ -75,14 +79,6 @@ var index = function () {
             });
             return unique;
         }
-    }, {
-        key: 'isValid',
-        value: function isValid(filePath) {
-            return ['', undefined, null, isNaN].indexOf(filePath) === -1 ? true : false;
-        }
-    }, {
-        key: 'readFile',
-        value: function readFile(filePath) {}
     }]);
 
     return index;

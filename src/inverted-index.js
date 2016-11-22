@@ -5,10 +5,9 @@ class index{
     
     //create index
     createIndex(fileContent){
-        this.indexes=[];
         this.docCount = [];
-        console.log(this.docCount);
         for(const object in fileContent){
+            //explain this
             this.docCount.push(parseInt(object,10));
         };
         fileContent.forEach((item, index)=>{
@@ -32,16 +31,16 @@ class index{
     }
 
     //search index
-    searchIndex(query, title){
-        const queryToken = this.tokenize(query);
-        const searchIndex = this.getIndex(title);
+    searchIndex(query){
+        const result = {};
+        const search = query.split(' ');
+        search.forEach((word) =>{
+            if (this.fileMap.hasOwnProperty(word)){
+                result[word] = this.fileMap[word];
+            }
+        });
 
-        if(!searchIndex){
-            return `Index with ${title} does not exist.`;
-        }
-
-        
-      
+        return Object.keys(result).length>0? result : 'Search Query Not Found';   
     }
 
     //tokenize
@@ -56,13 +55,7 @@ class index{
         return unique;
     }
 
-    isValid(filePath){
-        return (['',undefined,null,isNaN].indexOf(filePath) === -1)? true: false;
-    }
-
-   readFile(filePath){
-       
-    }
+    
 }
 
 // module.exports = index;
