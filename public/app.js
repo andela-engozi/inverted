@@ -6,15 +6,19 @@
         $scope.currentIndex = null;
         $scope.searchResult = [];
         $scope.message = '';
-        $scope.query = '';
+       // $scope.query = '';
+
+
+        $scope.search =()=>{
+            $scope.indexObject = ind.searchIndex($scope.query);
+
+        }
 
          $scope.createIndex = (file)=>{
              if (!file.name.toLowerCase().match(/\.json$/)) {
                  setMessage('This is not a JSON file.');
                 return;
              }
-            // console.log(file);
-
              const title = file.name.split('.')[0]
              const reader = new FileReader();
              
