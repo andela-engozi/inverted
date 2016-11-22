@@ -66,4 +66,4 @@ gulp.task('load-test', ()=>{
 })
 
 
-gulp.task('default', ['bundle-test','bundle-app', 'serve', 'load-test', 'watch']);
+gulp.task('default', ['bundle-test', 'serve', 'load-test', 'watch']);
