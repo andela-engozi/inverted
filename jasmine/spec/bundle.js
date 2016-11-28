@@ -44,153 +44,195 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-	var index = __webpack_require__(1);
-	var book = __webpack_require__(2);
 	
-	var invertedIndex;
+	const index = __webpack_require__(1);
 	
-	describe('Inverted index class', ()=>{
-	    beforeEach(function(){
-	        invertedIndex = new index();
-	        invertedIndex.createIndex(book);
-	    });
-	});
+	const book = __webpack_require__(2);
 	
-	describe('getIndex', ()=>{
-	    it('returns an array of numbers', ()=>{
-	        invertedIndex = new index();
-	        invertedIndex.createIndex(book);
-	        expect(invertedIndex.getIndex('of')).toEqual(jasmine.any(Array));
-	    });
-	
-	    it('returns an array with the correct index', ()=>{
-	        invertedIndex = new index();
-	        invertedIndex.createIndex(book);
-	        expect(invertedIndex.getIndex('of')).toEqual([0,1]);
-	        expect(invertedIndex.getIndex('alice')).toEqual([0]);
-	        expect(invertedIndex.getIndex('hole')).toEqual([0]);
-	        expect(invertedIndex.getIndex('a')).toEqual([0, 1]); 
-	    });
-	});
-	
-	describe('Tokenize', function(){
-	    it('removes special characters', function(){
-	        invertedIndex = new index();
-	        expect(invertedIndex.tokenize('alice !!!!, hello, world')).toEqual([ 'alice', 'hello', 'world' ]);
-	        expect(invertedIndex.tokenize('Today is **!! , a good!. day to smile, smile')).toEqual([ 'today', 'is', 'a', 'good', 'day', 'to', 'smile' ]);
-	
-	    });
-	
-	});
-	
-	describe('Read Book', function(){
-	    it('Ensure file content is a valid json file', function(){
-	
-	
-	    });
-	
-	});
-	
-	
-	describe('constructor', function(){
-	    it('invertedIndex is an instace of index class', function(){
-	        invertedIndex = new index();
-	        invertedIndex.createIndex(book);
+	describe('constructor', () => {
+	    const invertedIndex = new index();
+	    invertedIndex.createIndex(book);
+	    it('invertedIndex is an instance of index class', () => {
 	       expect(invertedIndex).toEqual(jasmine.any(Object));
 	    });
 	});
 	
+	describe('createIndex', () => {
+	     invertedIndex = new index();
+	     invertedIndex.createIndex(book);
+	    it('creates index', () => {
 	
-	
-	
-	describe('Populate Index', function(){
-	    it('verifies index is created once JSON is read', function(){
-	        
+	        //expect(invertedIndex.createIndex(book).a).toEqual([0,1])
 	    });
-	
-	    it('verifies index is created once JSON is read', function(){
-	        
+	    it('Saves the lenght of the documents', () => {
+	        expect(invertedIndex.docCount).toEqual(2);
 	    });
+	});
 	
-	describe('search Index', function(){
-	    it('should return the correct index', function(){
-	        invertedIndex = new index();
-	        invertedIndex.createIndex(book);
-	        expect(invertedIndex.searchIndex('of')).toEqual([0,1]);
-	        expect(invertedIndex.searchIndex('ngozi')).toEqual('record not found');
+	describe('Read Book', () => {
+	    invertedIndex = new index();
+	    invertedIndex.createIndex(book);
+	    it('Ensure file content is a valid json file', () => {
+	        expect(invertedIndex.isValid(book)).toBe(true);
+	    });
+	});
 	
+	describe('Get Index', () => {
+	    invertedIndex = new index();
+	    invertedIndex.createIndex(book);
+	    it('returns an object that is an accurate index of the content of the JSON file', () => {
+	        expect(invertedIndex.getIndex()).toEqual(jasmine.any(Object));
+	    });
+	});
+	
+	describe('Tokenize', () => {
+	    invertedIndex = new index();
+	    it('Removes special characters', () => {
+	        expect(invertedIndex.tokenize('alice !!!!, hello, world')).toEqual([ 'alice', 'hello', 'world' ]);
+	        expect(invertedIndex.tokenize('Today is **!!')).toEqual([ 'today', 'is']);
+	    });
+	    it('Removes duplicates', () => {
+	        expect(invertedIndex.tokenize('alice , alice, jane')).toEqual(['alice', 'jane']);
+	    });
+	    it('Creates an array of tokens', () => {
+	        expect(invertedIndex.tokenize(book[0].title)).toEqual(['alice', 'in', 'wonderland']);
+	    });
+	});
+	
+	describe('Search Index', () => {
+	    invertedIndex = new index();
+	    invertedIndex.createIndex(book);
+	    it('returns an Array of numbers', () => {
+	        expect(invertedIndex.searchIndex().of).toEqual([0,1]);
+	    });
+	    it('returns the index for the term searched', () => {
+	        expect(invertedIndex.searchIndex().of).toEqual([0,1]);
+	        expect(invertedIndex.searchIndex().alice).toEqual([0]);
+	    });
+	    it('searchIndex can handle an array of search terms', () => {
+	        expect(invertedIndex.searchIndex('alice in the')).toEqual({ alice: [ 0 ], in: [ 0 ], the: [ 1 ] });
+	    });
+	    it('returns an error message if search query not found', () => {
+	        expect(invertedIndex.searchIndex('rose')).toEqual('Search Query Not Found');
 	    });
 	});
 	
 	
-	})
+	describe('Populate Index', () => {
+	    invertedIndex = new index();
+	    invertedIndex.createIndex(book);
+	    it('verifies index is created once JSON is read', () => {
+	        expect(invertedIndex.fileMap).toEqual(jasmine.any(Object));
+	    });
+	    it('ensures index is correct', () => {
+	
+	        expect(invertedIndex.fileMap.alice).toEqual([0]);
+	    });
+	
+	});
 
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
 
-	class index{
-	    constructor(){
-	      this.fileMap = {};
+	/**
+	 * Index class
+	 * @class
+	 */
+	class index {
+	  /**
+	   * class constructor
+	   * @constructor
+	   */
+	  constructor() {
+	    this.fileMap = {};
+	  }
+	
+	  /**
+	   * removes special characters, white spaces and duplicates
+	   * @function
+	   * @param {string} text document title and text
+	   * @return {Array} tokens
+	   */
+	  tokenize(text) {
+	    const unique = [];
+	    const token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
+	    token.forEach((item) => {
+	      if (!unique.includes(item)) {
+	        unique.push(item);
+	      }
+	    });
+	    return unique;
+	  }
+	
+	  /**
+	   * create index
+	   * @function
+	   * @param {Array} fileContent objects in an Array
+	   * @return {Object} index object
+	   */
+	  createIndex(fileContent) {
+	    this.docCount = [];
+	    for (const object in fileContent) {
+	      this.docCount.push(parseInt(object, 10));
 	    }
-	    
-	    //create index
-	    createIndex(fileContent){
-	        this.docCount = [];
-	        for(const object in fileContent){
-	            //explain this
-	            this.docCount.push(parseInt(object,10));
-	        };
-	        fileContent.forEach((item, index)=>{
-	            let content = `${item.title} ${item.text}`;
-	            const token = this.tokenize(content);
-	            token.forEach((item)=>{  
-	                if(item in this.fileMap){
-	                    this.fileMap[item].push(index);
-	                }else{
-	                    this.fileMap[item] =[];
-	                    this.fileMap[item].push(index);
-	                }
-	            });
-	        });
-	        return this.fileMap;
+	    fileContent.forEach((fileObject, docTag) => {
+	      const content = `${fileObject.title} ${fileObject.text}`;
+	      const token = this.tokenize(content);
+	      token.forEach((item) => {
+	        if (item in this.fileMap) {
+	          this.fileMap[item].push(docTag);
+	        } else {
+	          this.fileMap[item] = [];
+	          this.fileMap[item].push(docTag);
 	        }
-	
-	    //get index
-	    getIndex(){
-	        return this.fileMap;
+	      });
+	    });
+	    return this.fileMap;
+	  }
+	  /**
+	   * Get index
+	   * @function
+	   * @return {Object} index object
+	   */
+	  getIndex() {
+	    return this.fileMap;
+	  }
+	  /**
+	   * Search Index
+	   * @function
+	   * @param {string} query string being searched
+	   * @return {Object} search result is returned
+	   */
+	  searchIndex(query) {
+	    const result = {};
+	    if (query === undefined) {
+	      return this.fileMap;
 	    }
+	    const search = query.split(' ');
+	    search.forEach((word) => {
+	      if (this.fileMap[word]) {
+	        result[word] = this.fileMap[word];
+	      }
+	    });
+	    return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
+	  }
 	
-	    //search index
-	    searchIndex(query){
-	        const result = {};
-	        const search = query.split(' ');
-	        search.forEach((word) =>{
-	            if (this.fileMap.hasOwnProperty(word)){
-	                result[word] = this.fileMap[word];
-	            }
-	        });
-	
-	        return Object.keys(result).length>0? result : 'Search Query Not Found';   
+	  /**
+	   * isValid
+	   * @function
+	   * @param {Array} fileContent
+	   * @return {boolean} statement is returned
+	   */
+	  isValid(fileContent) {
+	    if (!fileContent[0] && fileContent[0].title) {
+	      return false;
 	    }
-	
-	    //tokenize
-	    tokenize(text){
-	        let unique =[];
-	        let token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
-	        token.forEach((item)=>{
-	            if(!unique.includes(item)){
-	                unique.push(item);
-	            }
-	        });
-	        return unique;
-	    }
-	
-	    
+	    return true;
+	  }
 	}
 	
-	// module.exports = index;
+
 
 /***/ },
 /* 2 */
@@ -204,13 +246,9 @@
 		{
 			"title": "The Lord of the Rings: The Fellowship of the Ring.",
 			"text": "An unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring."
-		},
-		{
-			"title": "The ththththththth",
-			"text": "An unusual alliance of  hjhjnyjr jjjjhjhj !!!!!! .....$$$$$ß."
 		}
 	];
 
 /***/ }
 /******/ ]);
-//# sourceMappingURL=a3286d1bf54ebb361308.js.map
+//# sourceMappingURL=69f996cfaa3b65062808.js.map

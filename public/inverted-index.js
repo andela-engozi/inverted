@@ -4,84 +4,124 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ * Index class
+ * @class
+ */
 var index = function () {
-    function index() {
-        _classCallCheck(this, index);
+  /**
+   * class constructor
+   * @constructor
+   */
+  function index() {
+    _classCallCheck(this, index);
 
-        this.fileMap = {};
+    this.fileMap = {};
+  }
+
+  /**
+   * removes special characters, white spaces and duplicates
+   * @function
+   * @param {string} text document title and text
+   * @return {Array} tokens
+   */
+
+
+  _createClass(index, [{
+    key: 'tokenize',
+    value: function tokenize(text) {
+      var unique = [];
+      var token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
+      token.forEach(function (item) {
+        if (!unique.includes(item)) {
+          unique.push(item);
+        }
+      });
+      return unique;
     }
 
-    //create index
+    /**
+     * create index
+     * @function
+     * @param {Array} fileContent objects in an Array
+     * @return {Object} index object
+     */
 
+  }, {
+    key: 'createIndex',
+    value: function createIndex(fileContent) {
+      var _this = this;
 
-    _createClass(index, [{
-        key: 'createIndex',
-        value: function createIndex(fileContent) {
-            var _this = this;
+      this.docCount = [];
+      for (var object in fileContent) {
+        this.docCount.push(parseInt(object, 10));
+      }
+      fileContent.forEach(function (fileObject, docTag) {
+        var content = fileObject.title + ' ' + fileObject.text;
+        var token = _this.tokenize(content);
+        token.forEach(function (item) {
+          if (item in _this.fileMap) {
+            _this.fileMap[item].push(docTag);
+          } else {
+            _this.fileMap[item] = [];
+            _this.fileMap[item].push(docTag);
+          }
+        });
+      });
+      return this.fileMap;
+    }
+    /**
+     * Get index
+     * @function
+     * @return {Object} index object
+     */
 
-            this.docCount = [];
-            for (var object in fileContent) {
-                //explain this
-                this.docCount.push(parseInt(object, 10));
-            };
-            fileContent.forEach(function (item, index) {
-                var content = item.title + ' ' + item.text;
-                var token = _this.tokenize(content);
-                token.forEach(function (item) {
-                    if (item in _this.fileMap) {
-                        _this.fileMap[item].push(index);
-                    } else {
-                        _this.fileMap[item] = [];
-                        _this.fileMap[item].push(index);
-                    }
-                });
-            });
-            return this.fileMap;
+  }, {
+    key: 'getIndex',
+    value: function getIndex() {
+      return this.fileMap;
+    }
+    /**
+     * Search Index
+     * @function
+     * @param {string} query string being searched
+     * @return {Object} search result is returned
+     */
+
+  }, {
+    key: 'searchIndex',
+    value: function searchIndex(query) {
+      var _this2 = this;
+
+      var result = {};
+      if (query === undefined) {
+        return this.fileMap;
+      }
+      var search = query.split(' ');
+      search.forEach(function (word) {
+        if (_this2.fileMap[word]) {
+          result[word] = _this2.fileMap[word];
         }
+      });
+      return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
+    }
 
-        //get index
+    /**
+     * isValid
+     * @function
+     * @param {Array} fileContent
+     * @return {boolean} statement is returned
+     */
 
-    }, {
-        key: 'getIndex',
-        value: function getIndex() {
-            return this.fileMap;
-        }
+  }, {
+    key: 'isValid',
+    value: function isValid(fileContent) {
+      if (!fileContent[0] && fileContent[0].title) {
+        return false;
+      }
+      return true;
+    }
+  }]);
 
-        //search index
-
-    }, {
-        key: 'searchIndex',
-        value: function searchIndex(query) {
-            var _this2 = this;
-
-            var result = {};
-            var search = query.split(' ');
-            search.forEach(function (word) {
-                if (_this2.fileMap.hasOwnProperty(word)) {
-                    result[word] = _this2.fileMap[word];
-                }
-            });
-
-            return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
-        }
-
-        //tokenize
-
-    }, {
-        key: 'tokenize',
-        value: function tokenize(text) {
-            var unique = [];
-            var token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
-            token.forEach(function (item) {
-                if (!unique.includes(item)) {
-                    unique.push(item);
-                }
-            });
-            return unique;
-        }
-    }]);
-
-    return index;
+  return index;
 }();
-
-// module.exports = index;

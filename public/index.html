@@ -8,6 +8,7 @@
     <link href ="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"rel="stylesheet">
     <link href="./lib/css/bootstrap.min.css" rel="stylesheet">
     <link href="./lib/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="./lib/css/inverted-index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="angular.js"></script>
@@ -26,11 +27,11 @@
             </button>
             <a class="navbar-brand" href="#">Inverted Index</a>
         </div>
-        <div class="col-sm-5 col-md-5">
-            <form role="search">
+        <div class="col-sm-5 col-md-5 search-bar">
+            <form role="search" class="search-form">
                 <div class="search" ng-submit="search()">
                     <input type="text" class="form-control input-sm" maxlength="64" ng-model="query" placeholder="Search" />
-                    <button type="submit" class="btn btn-primary btn-sm" ng-click="search">Search</button>
+                    <button type="submit" class="btn btn-primary btn-sm" ng-click="search()">Search</button>
                 </div>
             </form>
         </div>
@@ -50,7 +51,7 @@
                     <div class="col-md-12">
                         <input type="file" class="form-control" id="json-file">
                         <span class="input-group-btn"></span>
-                        <p ng-show="indexNames.length < 1">Please upload a Json file.</p>
+                        <p class="notice" ng-show="indexNames.length < 1">Please upload a Json file.</p>
                     </div>
                 </div>
             </div>
@@ -58,7 +59,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading active">
                         Documents
-                        <span class="label label-info">Info</span>
+                        <span class="label label-info"></span>
                     </div>
                     <table class="table">
                         <thead ng-controller="indexController">

@@ -10,6 +10,24 @@ class index {
   constructor() {
     this.fileMap = {};
   }
+
+  /**
+   * removes special characters, white spaces and duplicates
+   * @function
+   * @param {string} text document title and text
+   * @return {Array} tokens
+   */
+  tokenize(text) {
+    const unique = [];
+    const token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
+    token.forEach((item) => {
+      if (!unique.includes(item)) {
+        unique.push(item);
+      }
+    });
+    return unique;
+  }
+
   /**
    * create index
    * @function
@@ -21,8 +39,8 @@ class index {
     for (const object in fileContent) {
       this.docCount.push(parseInt(object, 10));
     }
-    fileContent.forEach((item, docTag) => {
-      const content = `${item.title} ${item.text}`;
+    fileContent.forEach((fileObject, docTag) => {
+      const content = `${fileObject.title} ${fileObject.text}`;
       const token = this.tokenize(content);
       token.forEach((item) => {
         if (item in this.fileMap) {
@@ -56,27 +74,24 @@ class index {
     }
     const search = query.split(' ');
     search.forEach((word) => {
-      if (this.fileMap.hasOwnProperty(word)) {
+      if (this.fileMap[word]) {
         result[word] = this.fileMap[word];
       }
     });
     return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
   }
+
   /**
-   * removes special characters, white spaces and duplicates
+   * isValid
    * @function
-   * @param {string} text document title and text
-   * @return {Array} tokens
+   * @param {Array} fileContent
+   * @return {boolean} statement is returned
    */
-  tokenize(text) {
-    const unique = [];
-    const token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
-    token.forEach((item) => {
-      if (!unique.includes(item)) {
-        unique.push(item);
-      }
-    });
-    return unique;
+  isValid(fileContent) {
+    if (!fileContent[0] && fileContent[0].title) {
+      return false;
+    }
+    return true;
   }
 }
-module.exports = index;
+
