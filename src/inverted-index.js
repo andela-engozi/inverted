@@ -8,7 +8,7 @@ class index {
    * @constructor
    */
   constructor() {
-    this.fileMap = {};
+    this.indexes = {};
   }
 
   /**
@@ -18,14 +18,14 @@ class index {
    * @return {Array} tokens
    */
   tokenize(text) {
-    const unique = [];
+    const uniqueWords = [];
     const token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
     token.forEach((item) => {
-      if (!unique.includes(item)) {
-        unique.push(item);
+      if (!uniqueWords.includes(item)) {
+        uniqueWords.push(item);
       }
     });
-    return unique;
+    return uniqueWords;
   }
 
   /**
@@ -34,40 +34,40 @@ class index {
    * @param {Array} fileContent objects in an Array
    * @return {Object} index object
    */
-  createIndex(fileContent) {
-    this.docCount = [];
-    for (const object in fileContent) {
-      this.docCount.push(parseInt(object, 10));
-    }
-    fileContent.forEach((fileObject, docTag) => {
-      const content = `${fileObject.title} ${fileObject.text}`;
-      const token = this.tokenize(content);
-      token.forEach((item) => {
-        if (item in this.fileMap) {
-          this.fileMap[item].push(docTag);
-        } else {
-          this.fileMap[item] = [];
-          this.fileMap[item].push(docTag);
+  createIndex(Jsondocument, fileTitle) {
+    this.fileMap = {};
+    Jsondocument.forEach((JsonObject, index) => {
+      const tokens = this.tokenize(`${JsonObject.title} ${JsonObject.text}`);
+      tokens.forEach((token) => {
+        if(token in this.fileMap){
+          this.fileMap[token].push(index);
+        }
+        else {
+          this.fileMap[token] = [];
+          this.fileMap[token].push(index);
         }
       });
+      this.indexes[fileTitle] = this.fileMap
     });
-    return this.fileMap;
+    return this.indexes
   }
+  
   /**
    * Get index
    * @function
    * @return {Object} index object
    */
-  getIndex() {
-    return this.fileMap;
+  getIndex(title) {
+    this.indexes[title];
   }
+
   /**
    * Search Index
    * @function
    * @param {string} query string being searched
    * @return {Object} search result is returned
    */
-  searchIndex(query) {
+  searchIndex(query, title) {
     const result = {};
     if (query === undefined) {
       return this.fileMap;
@@ -79,6 +79,17 @@ class index {
       }
     });
     return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
+  }
+
+  /**
+   * get the document count
+   */
+  documentCount(Jsondocument) {
+    this.Documents = [];
+    for (const object in Jsondocument) {
+      this.Documents.push(parseInt(object));
+    }
+    return this.Documents;
   }
 
   /**
