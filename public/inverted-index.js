@@ -135,7 +135,25 @@ var InvertedIndex = function () {
       }
       return true;
     }
+  }, {
+    key: 'isValidFile',
+    value: function isValidFile(file) {
+      if (!file.name.toLowerCase().match(/\.json$/)) {
+        return false;
+      }
+      return true;
+    }
+  }, {
+    key: 'isnotEmpty',
+    value: function isnotEmpty(file) {
+      if (file[0] === undefined) {
+        return 'Json file is empty';
+      }
+      return true;
+    }
   }]);
 
   return InvertedIndex;
 }();
+
+module.exports = InvertedIndex;

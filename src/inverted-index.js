@@ -105,5 +105,18 @@ class InvertedIndex {
     }
     return true;
   }
-}
 
+  isValidFile(file) {
+    if (!file.name.toLowerCase().match(/\.json$/)) {
+      return false;
+    }
+    return true;
+  }
+  isnotEmpty(file) {
+    if(file[0] === undefined) {
+      return 'Json file is empty';
+    }
+    return true;
+  }
+}
+module.exports = InvertedIndex;

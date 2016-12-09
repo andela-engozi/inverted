@@ -1,5 +1,7 @@
 # Inverted Index
-
+[![Code Climate](https://codeclimate.com/repos/583eb4a8523b33006b001c66/badges/c112c42dd407fc99a629/gpa.svg)](https://codeclimate.com/repos/583eb4a8523b33006b001c66/feed)
+[![Issue Count](https://codeclimate.com/repos/583eb4a8523b33006b001c66/badges/c112c42dd407fc99a629/issue_count.svg)](https://codeclimate.com/repos/583eb4a8523b33006b001c66/feed)
+[![Build Status](https://travis-ci.org/andela-tisrael/checkpoint-inverted-index.svg?branch=develop)](https://travis-ci.org/andela-tisrael/checkpoint-inverted-index)
 ## Introduction
 
 Inverted index takes a JSON array of text objects and creates an index from the array. The index allows a user to search for text blocks in the array that contain a specified collection of words.

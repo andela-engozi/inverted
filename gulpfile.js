@@ -28,8 +28,6 @@ gulp.task('serve', ()=>{
         }
     });
 });
-
-
 gulp.task('bundle-test', function() {
   return gulp.src('./jasmine/spec/inverted-index-test.js')
     .pipe(webpack(require('./webpack.config.js')))
@@ -51,7 +49,6 @@ gulp.task('babel', () => {
             }))
             .pipe(gulp.dest('public/'));
 });
-
 gulp.task('load-test', ()=>{
     browserSync2.init({
         server: {
