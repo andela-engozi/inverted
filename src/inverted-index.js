@@ -2,7 +2,7 @@
  * Index class
  * @class
  */
-class index {
+class InvertedIndex {
   /**
    * class constructor
    * @constructor
@@ -31,12 +31,13 @@ class index {
   /**
    * create index
    * @function
-   * @param {Array} fileContent objects in an Array
+   * @param {Array} jsonArray objects in an Array
+   * @param {title} title file title
    * @return {Object} index object
    */
-  createIndex(Jsondocument, fileTitle) {
+  createIndex(jsonArray, title) {
     this.fileMap = {};
-    Jsondocument.forEach((JsonObject, index) => {
+    jsonArray.forEach((JsonObject, index) => {
       const tokens = this.tokenize(`${JsonObject.title} ${JsonObject.text}`);
       tokens.forEach((token) => {
         if(token in this.fileMap){
@@ -47,7 +48,7 @@ class index {
           this.fileMap[token].push(index);
         }
       });
-      this.indexes[fileTitle] = this.fileMap
+      this.indexes[title] = this.fileMap
     });
     return this.indexes
   }
@@ -58,7 +59,7 @@ class index {
    * @return {Object} index object
    */
   getIndex(title) {
-    this.indexes[title];
+    return this.indexes[title];
   }
 
   /**
@@ -82,11 +83,11 @@ class index {
   }
 
   /**
-   * get the document count
+   * get the number of objects
    */
-  documentCount(Jsondocument) {
+  documentCount(jsonArray) {
     this.Documents = [];
-    for (const object in Jsondocument) {
+    for (const object in jsonArray) {
       this.Documents.push(parseInt(object));
     }
     return this.Documents;
