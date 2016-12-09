@@ -139,7 +139,7 @@
 	 * Index class
 	 * @class
 	 */
-	class Invertedindex {
+	class InvertedIndex {
 	  /**
 	   * class constructor
 	   * @constructor
@@ -220,7 +220,7 @@
 	  }
 	
 	  /**
-	   * get the document count
+	   * get the number of objects
 	   */
 	  documentCount(jsonArray) {
 	    this.Documents = [];
@@ -267,4 +267,4 @@
 
 /***/ }
 /******/ ]);
-//# sourceMappingURL=4b88074408a9dbf2c860.js.map
+//# sourceMappingURL=bb2a0047818d24ad4136.js.map

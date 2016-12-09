@@ -9,6 +9,9 @@ angular.module('invertedIndex', [])
   $scope.currentIndex = '';
   $scope.showButton = false;
 
+  /**
+   * check if file is valid
+   */
   $scope.isValid = (fileName) => {
     if (fileName.toLowerCase().match(/\.json$/)) {
         return true;
@@ -65,13 +68,7 @@ angular.module('invertedIndex', [])
     else {
       $scope.currentIndex = $scope.searchResult;
     }
-  }
-
-
-  
-
-
-  
+  } 
 
 });
 
