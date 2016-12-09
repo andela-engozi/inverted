@@ -3,7 +3,6 @@ const InvertedIndex = require('../../src/inverted-index');
 
 const book = require('../books.json');
 
-
 describe('Inverted Index', () => {
     beforeEach( () => {
         this.index = new InvertedIndex();
@@ -25,30 +24,35 @@ describe('Inverted Index', () => {
         it('should ensure the file content is actually a valid JSON Array', () => {
             expect(this.index.isValidFile(filename)).toEqual(true);
         });
-        it('should ensure the file content is actually a valid JSON Array', () => {
-            expect(this.index.isValidFile(filename)).toEqual(true);
-        });
         it('should ensure the file is not empty', () => {
             expect(this.index.isnotEmpty(file)).toEqual('Json file is empty');
         });
     });
 
     describe('Populate Index',  () => {
-        it('should populate the index object once it creates an index',()=>{
-        expect(this.index.getIndex('books').hasOwnProperty('alice')).toBeTruthy();
+        it('Ensures the index object once it creates an index',()=>{
+            expect(this.index.getIndex('books').hasOwnProperty('alice')).toBeTruthy();
         });
 
-        it('verifies that index maps strings to the correct Json objects', () => {
+        it('Ensures index is correct', () => {
             expect(this.index.getIndex('books')['alice']).toEqual([0]);;
         });
     });
 
     describe('Search Index',  () => {
-        it('search index of words correctly', () => {
+        it('returns the correct index when searched', () => {
             expect(this.index.searchIndex('alice', 'books')).toEqual({ alice: [ 0 ] });
         });
+
+        it ('Can handle a varied number of search terms as arguments.', () => {
+            expect(this.index.searchIndex('alice wonderland')).toEqual({ alice: [ 0 ], wonderland: [ 0 ] });
+        });
+
+        it ('Goes through all indexed files if a filename is not passed', () => {
+            expect(this.index.searchIndex('alice wonderland')).toEqual({ alice: [ 0 ], wonderland: [ 0 ] });
+        });
         
-    })
+    });
 
     describe('Tokenize', () => {
         it('Removes special characters', () => {
@@ -70,4 +74,4 @@ describe('Inverted Index', () => {
     });
 
     
-})
+});
