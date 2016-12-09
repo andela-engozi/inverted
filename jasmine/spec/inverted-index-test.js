@@ -3,6 +3,7 @@ const InvertedIndex = require('../../src/inverted-index');
 
 const book = require('../books.json');
 
+
 describe('Inverted Index', () => {
     beforeEach( () => {
         this.index = new InvertedIndex();

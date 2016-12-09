@@ -106,12 +106,16 @@ class InvertedIndex {
     return true;
   }
 
+
   isValidFile(file) {
     if (!file.name.toLowerCase().match(/\.json$/)) {
       return false;
     }
     return true;
   }
+  /**
+  * checks if file content is valid
+  */
   isnotEmpty(file) {
     if(file[0] === undefined) {
       return 'Json file is empty';
