@@ -38,13 +38,14 @@
     margin-left: 0px;
 }
 
-.btn {
+.btn-custom {
     height: 30px;
     position: absolute;
     right: 0;
     top: 5px;
     border-radius:1px;
 }
+
 
 .search-bar {
     float: right;
@@ -57,4 +58,8 @@
 
 .notice {
     padding-top: 10px;
+}
+
+.label-text {
+    padding-top :10px;
 }
