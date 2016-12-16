@@ -13,6 +13,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="angular.js"></script>
+    <script src="inverted-helper.js"></script>
     <script src="inverted-index.js"></script>
     <script src="app.js"></script>
 </head>
@@ -29,6 +30,13 @@
             <a class="navbar-brand" href="#">Inverted Index</a>
         </div>
         <div class="col-sm-5 col-md-5 search-bar">
+            <select class="select-option" ng-model="title">
+                <option value="" selected disabled>Please select a file</option>
+                <option ng-repeat="title in fileTitles" value="{{title}}">
+                {{title}}
+                </option>
+                <option ng-show="fileTitles.length > 1" value="all">all</option>
+                </select>
             <form role="search" class="search-form">
                 <div class="search" ng-submit="search()">
                     <input type="text" class="form-control input-sm" maxlength="64" ng-model="query" placeholder="Search" />
@@ -52,6 +60,7 @@
                         <label class="btn btn-default">
                             Upload file...<input type="file" style="display: none;" id="json-file" multiple>
                         </label>
+                        <button type="submit" class="btn btn-primary" ng-click="showUploadedFiles()" ng-show="fileTitles.length > 1">Show All Uplaoded files</button>
                         <p class="notice" ng-show="fileTitles.length < 1">Please upload a Json file.</p>
                     </div>
                     <!-- div class for file index-->
@@ -73,22 +82,23 @@
                         Index Table <i class="fa fa-file" aria-hidden="true"></i>
                         <span class="label label-info"></span>
                     </div>
-                    <table class="table">
-                        <thead ng-controller="indexController">
+                    <table class="table" ng-repeat="(filetitle, result) in currentIndex">
+
+                        <thead>
                             
                             <tr>
-                                <th>Terms
+                                <th>File: {{filetitle}}
                                 </th>
-                                <th ng-repeat="i in documents">Document {{i+1}}
+                                <th ng-repeat="i in documentCounter[filetitle]">Document {{i+1}}
                                     <i class="fa fa-table" aria-hidden="true"></i>
                                 </th>
                                 </span>
                             </tr>
                         </thead>
                         <tbody>
-                           <tr ng-repeat="(key,value) in currentIndex">
+                           <tr ng-repeat="(key,value) in result">
                                 <td>{{key}}</td>
-                                <td ng-repeat="i in documents">
+                                <td ng-repeat="i in documentCounter[filetitle]">
                                     <span ng-repeat="val in value">
                                         <span ng-if="i==val"><i class="fa fa-check" aria-hidden="true"></i></span>
                                     </span>
@@ -96,6 +106,27 @@
                             </tr>
                         </tbody>
                     </table>
+                    <!--<table class="table" ng-repeat="(filetitle, result) in searchAllResult">
+                        <thead>
+                            
+                            <tr>
+                                <th>Terms</th>
+                                <th ng-repeat="i in documentCounter[filetitle]">Document {{i+1}}
+                                    <i class="fa fa-table" aria-hidden="true"></i>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           <tr ng-repeat="(key,value) in result">
+                                <td>{{key}}</td>
+                                <td ng-repeat="i in documentCounter[filetitle]">
+                                    <span ng-repeat="val in value">
+                                        <span ng-if="i==val"><i class="fa fa-check" aria-hidden="true"></i></span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>-->
                 </div>
             </div>
         </div>

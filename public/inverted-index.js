@@ -20,42 +20,22 @@ var InvertedIndex = function () {
   }
 
   /**
-   * removes special characters, white spaces and duplicates
+   * create index
    * @function
-   * @param {string} text document title and text
-   * @return {Array} tokens
+   * @param {Array} fileContent objects in an Array
+   * @param {title} title file title
+   * @return {indexes} index object
    */
 
 
   _createClass(InvertedIndex, [{
-    key: 'tokenize',
-    value: function tokenize(text) {
-      var uniqueWords = [];
-      var token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
-      token.forEach(function (item) {
-        if (!uniqueWords.includes(item)) {
-          uniqueWords.push(item);
-        }
-      });
-      return uniqueWords;
-    }
-
-    /**
-     * create index
-     * @function
-     * @param {Array} jsonArray objects in an Array
-     * @param {title} title file title
-     * @return {Object} index object
-     */
-
-  }, {
     key: 'createIndex',
-    value: function createIndex(jsonArray, title) {
+    value: function createIndex(fileContent, title) {
       var _this = this;
 
       this.fileMap = {};
-      jsonArray.forEach(function (JsonObject, index) {
-        var tokens = _this.tokenize(JsonObject.title + ' ' + JsonObject.text);
+      fileContent.forEach(function (content, index) {
+        var tokens = Helper.tokenize(content.title + ' ' + content.text);
         tokens.forEach(function (token) {
           if (token in _this.fileMap) {
             _this.fileMap[token].push(index);
@@ -82,7 +62,7 @@ var InvertedIndex = function () {
     }
 
     /**
-     * Search Index
+     * Search a particular file
      * @function
      * @param {string} query string being searched
      * @return {Object} search result is returned
@@ -90,14 +70,23 @@ var InvertedIndex = function () {
 
   }, {
     key: 'searchIndex',
-    value: function searchIndex(query, title) {
-      var _this2 = this;
+    value: function searchIndex(title) {
+      var _Helper,
+          _this2 = this;
 
+      if (title) {
+        this.fileMap = this.indexes[title];
+      }
       var result = {};
+
+      for (var _len = arguments.length, query = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        query[_key - 1] = arguments[_key];
+      }
+
       if (query === undefined) {
         return this.fileMap;
       }
-      var search = query.split(' ');
+      var search = (_Helper = Helper).flatten.apply(_Helper, query);
       search.forEach(function (word) {
         if (_this2.fileMap[word]) {
           result[word] = _this2.fileMap[word];
@@ -107,53 +96,34 @@ var InvertedIndex = function () {
     }
 
     /**
-     * get the number of objects
+     * Search multiple files 
      */
 
   }, {
-    key: 'documentCount',
-    value: function documentCount(jsonArray) {
-      this.Documents = [];
-      for (var object in jsonArray) {
-        this.Documents.push(parseInt(object));
-      }
-      return this.Documents;
-    }
+    key: 'searchAllfiles',
+    value: function searchAllfiles() {
+      var _Helper2,
+          _this3 = this;
 
-    /**
-     * isValid
-     * @function
-     * @param {Array} fileContent
-     * @return {boolean} statement is returned
-     */
+      var search = (_Helper2 = Helper).flatten.apply(_Helper2, arguments);
+      var result = {};
 
-  }, {
-    key: 'isValid',
-    value: function isValid(fileContent) {
-      if (!fileContent[0] && fileContent[0].title) {
-        return false;
-      }
-      return true;
-    }
-  }, {
-    key: 'isValidFile',
-    value: function isValidFile(file) {
-      if (!file.name.toLowerCase().match(/\.json$/)) {
-        return false;
-      }
-      return true;
-    }
-  }, {
-    key: 'isnotEmpty',
-    value: function isnotEmpty(file) {
-      if (file[0] === undefined) {
-        return 'Json file is empty';
-      }
-      return true;
+      var _loop = function _loop(title) {
+        result[title] = {};
+        var filetoSearch = _this3.indexes[title];
+        search.forEach(function (word) {
+          if (filetoSearch[word]) {
+            result[title][word] = filetoSearch[word];
+          }
+        });
+      };
+
+      for (var title in this.indexes) {
+        _loop(title);
+      };
+      return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
     }
   }]);
 
   return InvertedIndex;
 }();
-
-module.exports = InvertedIndex;

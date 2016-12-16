@@ -45,14 +45,16 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	
-	const InvertedIndex = __webpack_require__(1);
-	
-	const book = __webpack_require__(2);
+	const book = __webpack_require__(1);
+	const badFile = __webpack_require__(2);
+	const empty = __webpack_require__(3);
+	const valid = __webpack_require__(4);
 	
 	describe('Inverted Index', () => {
 	    beforeEach( () => {
 	        this.index = new InvertedIndex();
 	        this.create = this.index.createIndex(book, 'books');
+	        this.create1 = this.index.createIndex(valid, 'valid');
 	        this.getIndex = this.index.getIndex('books');
 	    });
 	    it('should create an object once a class is instantiated', () => {
@@ -60,51 +62,68 @@
 	    });
 	
 	    describe('Read book data',  () => {
-	        const filename = {
-	            'name':'file.json',
-	        };
-	        const filename2 = {
-	            'name':'file2.js',
-	        }
-	        const file = []
+	        const file = {'name': 'book.json',};
+	        const file1 = {'name': 'empty.js',};
+	        const empty = [];
+	        const book = [{'title': 'hello'}];
 	        it('should ensure the file content is actually a valid JSON Array', () => {
-	            expect(this.index.isValidFile(filename)).toEqual(true);
-	        });
-	        it('should ensure the file content is actually a valid JSON Array', () => {
-	            expect(this.index.isValidFile(filename)).toEqual(true);
+	            expect(Helper.isValidFile(file)).toEqual(true);
+	            expect(Helper.isValidFile(file1)).toEqual(false);
 	        });
 	        it('should ensure the file is not empty', () => {
-	            expect(this.index.isnotEmpty(file)).toEqual('Json file is empty');
+	            expect(Helper.isnotEmpty(empty)).toEqual('Json file is empty');
+	            expect(Helper.isnotEmpty(book)).toEqual(true);
 	        });
 	    });
 	
 	    describe('Populate Index',  () => {
-	        it('should populate the index object once it creates an index',()=>{
-	        expect(this.index.getIndex('books').hasOwnProperty('alice')).toBeTruthy();
+	        it('should ensure the index is created once the JSON file has been read',()=>{
+	            expect(this.index.getIndex('books').hasOwnProperty('alice')).toBeTruthy();
+	            expect(this.index.getIndex('books').hasOwnProperty('the')).toBeTruthy();
 	        });
 	
-	        it('verifies that index maps strings to the correct Json objects', () => {
-	            expect(this.index.getIndex('books')['alice']).toEqual([0]);;
+	        it('should ensure index is correct', () => {
+	            expect(this.index.getIndex('books')['alice']).toEqual([0]);
+	            expect(this.index.getIndex('books')['the']).toEqual([1]);
+	            expect(this.index.getIndex('books')['a']).toEqual([0,1]);
+	        });
+	        it('should return an array that contains the indexes of a word', () => {
+	            expect(this.index.getIndex('books').alice).toEqual([0]);
+	            expect(this.index.getIndex('books').wonderland).toEqual([0]);
+	        });
+	
+	        it('should ensure index is not overwritten by a new JSON file', () => {
+	            expect(Object.keys(this.index.indexes)).toEqual([ 'books', 'valid']);
 	        });
 	    });
 	
 	    describe('Search Index',  () => {
-	        it('search index of words correctly', () => {
-	            expect(this.index.searchIndex('alice', 'books')).toEqual({ alice: [ 0 ] });
+	        it('returns the correct index when searched', () => {
+	            expect(this.index.searchIndex('books', 'alice')).toEqual({ alice: [ 0 ] });
+	        });
+	
+	        it ('Can handle a varied number of search terms as arguments.', () => {
+	            expect(this.index.searchIndex('books', 'alice', 'wonderland')).toEqual({ alice: [ 0 ], wonderland: [ 0 ] });
+	        });
+	        it('should return an array of search terms', ()=> {
+	            expect(this.index.searchIndex('books',['alice', 'wonderland']).toEqual({ alice: [ 0 ], wonderland: [ 0 ] }));
+	        });
+	        it ('Goes through all indexed files if a filename is not passed', () => {
+	            expect(this.index.searchAllfiles('alice', 'wonderland', 'some', 'hill')).toEqual({ books:({ alice: [ 0 ], wonderland: [ 0 ] }), valid:({ some: [ 0 ], hill: [ 0 ] }) });
 	        });
 	        
-	    })
+	    });
 	
 	    describe('Tokenize', () => {
 	        it('Removes special characters', () => {
-	            expect(this.index.tokenize('alice !!!!, hello, world')).toEqual([ 'alice', 'hello', 'world' ]);
-	            expect(this.index.tokenize('Today is **!!')).toEqual([ 'today', 'is']);
+	            expect(Helper.tokenize('alice !!!!, hello, world')).toEqual([ 'alice', 'hello', 'world' ]);
+	            expect(Helper.tokenize('Today is **!!')).toEqual([ 'today', 'is']);
 	        });
 	        it('Removes duplicates', () => {
-	            expect(this.index.tokenize('alice , alice, jane')).toEqual(['alice', 'jane']);
+	            expect(Helper.tokenize('alice , alice, jane')).toEqual(['alice', 'jane']);
 	        });
 	        it('Creates an array of tokens', () => {
-	            expect(this.index.tokenize(book[0].title)).toEqual(['alice', 'in', 'wonderland']);
+	            expect(Helper.tokenize(book[0].title)).toEqual(['alice', 'in', 'wonderland']);
 	        });
 	    });
 	
@@ -115,138 +134,10 @@
 	    });
 	
 	    
-	})
+	});
 
 /***/ },
 /* 1 */
-/***/ function(module, exports) {
-
-	/**
-	 * Index class
-	 * @class
-	 */
-	class InvertedIndex {
-	  /**
-	   * class constructor
-	   * @constructor
-	   */
-	  constructor() {
-	    this.indexes = {};
-	  }
-	
-	  /**
-	   * removes special characters, white spaces and duplicates
-	   * @function
-	   * @param {string} text document title and text
-	   * @return {Array} tokens
-	   */
-	  tokenize(text) {
-	    const uniqueWords = [];
-	    const token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
-	    token.forEach((item) => {
-	      if (!uniqueWords.includes(item)) {
-	        uniqueWords.push(item);
-	      }
-	    });
-	    return uniqueWords;
-	  }
-	
-	  /**
-	   * create index
-	   * @function
-	   * @param {Array} jsonArray objects in an Array
-	   * @param {title} title file title
-	   * @return {Object} index object
-	   */
-	  createIndex(jsonArray, title) {
-	    this.fileMap = {};
-	    jsonArray.forEach((JsonObject, index) => {
-	      const tokens = this.tokenize(`${JsonObject.title} ${JsonObject.text}`);
-	      tokens.forEach((token) => {
-	        if(token in this.fileMap){
-	          this.fileMap[token].push(index);
-	        }
-	        else {
-	          this.fileMap[token] = [];
-	          this.fileMap[token].push(index);
-	        }
-	      });
-	      this.indexes[title] = this.fileMap
-	    });
-	    return this.indexes
-	  }
-	  
-	  /**
-	   * Get index
-	   * @function
-	   * @return {Object} index object
-	   */
-	  getIndex(title) {
-	    return this.indexes[title];
-	  }
-	
-	  /**
-	   * Search Index
-	   * @function
-	   * @param {string} query string being searched
-	   * @return {Object} search result is returned
-	   */
-	  searchIndex(query, title) {
-	    const result = {};
-	    if (query === undefined) {
-	      return this.fileMap;
-	    }
-	    const search = query.split(' ');
-	    search.forEach((word) => {
-	      if (this.fileMap[word]) {
-	        result[word] = this.fileMap[word];
-	      }
-	    });
-	    return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
-	  }
-	
-	  /**
-	   * get the number of objects
-	   */
-	  documentCount(jsonArray) {
-	    this.Documents = [];
-	    for (const object in jsonArray) {
-	      this.Documents.push(parseInt(object));
-	    }
-	    return this.Documents;
-	  }
-	
-	  /**
-	   * isValid
-	   * @function
-	   * @param {Array} fileContent
-	   * @return {boolean} statement is returned
-	   */
-	  isValid(fileContent) {
-	    if (!fileContent[0] && fileContent[0].title) {
-	      return false;
-	    }
-	    return true;
-	  }
-	
-	  isValidFile(file) {
-	    if (!file.name.toLowerCase().match(/\.json$/)) {
-	      return false;
-	    }
-	    return true;
-	  }
-	  isnotEmpty(file) {
-	    if(file[0] === undefined) {
-	      return 'Json file is empty';
-	    }
-	    return true;
-	  }
-	}
-	module.exports = InvertedIndex;
-
-
-/***/ },
-/* 2 */
 /***/ function(module, exports) {
 
 	module.exports = [
@@ -264,6 +155,42 @@
 		}
 	];
 
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"file1": {
+			"title": "Alice in Wonderland",
+			"text": "Alice falls into a rabbit hole and enters a world full of imagination."
+		},
+		"file2": {
+			"title": "The Lord of the Rings: The Fellowship of the Ring.",
+			"text": "An unusual alliance of man, elf, dwarf, wizard and hobbit seek to destroy a powerful ring."
+		}
+	};
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	module.exports = [];
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	module.exports = [
+		{
+			"title": "The hill",
+			"text": "Some may trust in"
+		},
+		{
+			"title": "Travis",
+			"text": "The travis in CI is not in."
+		}
+	];
+
 /***/ }
 /******/ ]);
-//# sourceMappingURL=ce63a770ddd497ef35cf.js.map
+//# sourceMappingURL=704f52ee5231bc29a1bc.js.map

@@ -12,33 +12,16 @@ class InvertedIndex {
   }
 
   /**
-   * removes special characters, white spaces and duplicates
-   * @function
-   * @param {string} text document title and text
-   * @return {Array} tokens
-   */
-  tokenize(text) {
-    const uniqueWords = [];
-    const token = text.toLowerCase().replace(/[^\w\s]/gi, '').match(/\w+/g);
-    token.forEach((item) => {
-      if (!uniqueWords.includes(item)) {
-        uniqueWords.push(item);
-      }
-    });
-    return uniqueWords;
-  }
-
-  /**
    * create index
    * @function
-   * @param {Array} jsonArray objects in an Array
+   * @param {Array} fileContent objects in an Array
    * @param {title} title file title
-   * @return {Object} index object
+   * @return {indexes} index object
    */
-  createIndex(jsonArray, title) {
+  createIndex(fileContent, title) {
     this.fileMap = {};
-    jsonArray.forEach((JsonObject, index) => {
-      const tokens = this.tokenize(`${JsonObject.title} ${JsonObject.text}`);
+    fileContent.forEach((content, index) => {
+      const tokens = Helper.tokenize(`${content.title} ${content.text}`);
       tokens.forEach((token) => {
         if(token in this.fileMap){
           this.fileMap[token].push(index);
@@ -63,17 +46,20 @@ class InvertedIndex {
   }
 
   /**
-   * Search Index
+   * Search a particular file
    * @function
    * @param {string} query string being searched
    * @return {Object} search result is returned
    */
-  searchIndex(query, title) {
+  searchIndex(title,...query) {
+    if(title){
+      this.fileMap = this.indexes[title];
+    }
     const result = {};
     if (query === undefined) {
       return this.fileMap;
     }
-    const search = query.split(' ');
+    const search = Helper.flatten(...query);
     search.forEach((word) => {
       if (this.fileMap[word]) {
         result[word] = this.fileMap[word];
@@ -82,45 +68,23 @@ class InvertedIndex {
     return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
   }
 
-  /**
-   * get the number of objects
-   */
-  documentCount(jsonArray) {
-    this.Documents = [];
-    for (const object in jsonArray) {
-      this.Documents.push(parseInt(object));
-    }
-    return this.Documents;
-  }
+/**
+ * Search multiple files 
+ */
+  searchAllfiles(...query) {
+    const search = Helper.flatten(...query);
+    const result = {};
+    for (const title in this.indexes) {
+      result[title] = {};
+      const filetoSearch = this.indexes[title];
+      search.forEach((word) => {
+        if (filetoSearch[word]) {
+          result[title][word] = filetoSearch[word];
+        }
+      });
+    };
+    return Object.keys(result).length > 0 ? result : 'Search Query Not Found';
 
-  /**
-   * isValid
-   * @function
-   * @param {Array} fileContent
-   * @return {boolean} statement is returned
-   */
-  isValid(fileContent) {
-    if (!fileContent[0] && fileContent[0].title) {
-      return false;
-    }
-    return true;
-  }
-
-
-  isValidFile(file) {
-    if (!file.name.toLowerCase().match(/\.json$/)) {
-      return false;
-    }
-    return true;
-  }
-  /**
-  * checks if file content is valid
-  */
-  isnotEmpty(file) {
-    if(file[0] === undefined) {
-      return 'Json file is empty';
-    }
-    return true;
   }
 }
-module.exports = InvertedIndex;
+

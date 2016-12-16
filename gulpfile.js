@@ -52,7 +52,7 @@ gulp.task('babel', () => {
 gulp.task('load-test', ()=>{
     browserSync2.init({
         server: {
-            baseDir: 'jasmine',
+            baseDir: ['jasmine', 'src', 'public'],
             index: 'SpecRunner.html'
         },
         port: 5000,
