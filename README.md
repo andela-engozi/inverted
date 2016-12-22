@@ -21,7 +21,8 @@ Inverted index takes a JSON array of text objects and creates an index from the 
 
 
 ## Useage
-The app can be deployed directly to Heroku by clicking this button
+The app can be deployed directly to Heroku by clicking this  [button](https://inverted-index-ng.herokuapp.com/)
+
 
 Or you can clone this repository and run the app locally.
 
